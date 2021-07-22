@@ -1,25 +1,28 @@
 package com.example.usermongodb.mocks;
 
+import com.example.usermongodb.dto.RoleDto;
+import com.example.usermongodb.dto.UserDto;
 import com.example.usermongodb.enums.CountryEnum;
 import com.example.usermongodb.enums.RoleEnum;
-import com.example.usermongodb.models.Role;
-import com.example.usermongodb.models.User;
+
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class MockeUser {
 
-    private static User userValid;
-    private static User userInvalid;
-    private static Set<Role>  roles;
+    private static UserDto userValid;
+    private static UserDto userInvalid;
+    private static Set<RoleDto>  roles;
 
     static {
         roles = new HashSet<>();
-        roles.add(new Role(new Long(1) , RoleEnum.USER.name()));
+        RoleDto role = new RoleDto();
+        role.setId(new Long(1));
+        role.setName(RoleEnum.USER.name());
+        roles.add(role);
         // valid user
-        userValid = new User();
+        userValid = new UserDto();
         userValid.setId(new Long(1));
         userValid.setAge(18);
         userValid.setFirstName("mohamed");
@@ -28,11 +31,11 @@ public class MockeUser {
         userValid.setRoles(roles);
 
         // invalid user to test validation
-        userInvalid = new User();
+        userInvalid = new UserDto();
         userInvalid.setAge(17);
         userInvalid.setCountry(CountryEnum.MR.label);
     }
 
-    public static User getValidUser() {return userValid ;}
-    public static User getInvalidUser() {return userInvalid ;}
+    public static UserDto getValidUser() {return userValid ;}
+    public static UserDto getInvalidUser() {return userInvalid ;}
 }

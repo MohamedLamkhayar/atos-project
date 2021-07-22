@@ -1,22 +1,20 @@
 package com.example.usermongodb.rest;
 
-import com.example.usermongodb.config.sequence.SequenceService;
-import com.example.usermongodb.dao.RoleRepository;
-import com.example.usermongodb.dao.UserRepository;
+
+import com.example.usermongodb.dto.RoleDto;
+import com.example.usermongodb.dto.UserDto;
 import com.example.usermongodb.exception.ResourceNotFoundException;
 import com.example.usermongodb.models.Role;
-import com.example.usermongodb.models.User;
+import com.example.usermongodb.service.RoleService;
+import com.example.usermongodb.service.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -24,13 +22,10 @@ import java.util.Set;
 public class UserRestController {
 
     @Autowired
-    private SequenceService sequenceService;
+    private UserService userService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
+    private RoleService roleService;
 
     /**
      * should get the user's details
@@ -39,32 +34,28 @@ public class UserRestController {
      * @throws ResourceNotFoundException
      */
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable(value = "id") Long userId) throws ResourceNotFoundException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found for this id :: " + userId));
-
+    public ResponseEntity<UserDto> getUserById(@PathVariable(value = "id") Long userId) throws ResourceNotFoundException {
+        UserDto user = userService.getUser(userId);
         return ResponseEntity.ok(user);
     }
 
     /**
      * should create user
-     * @param user
+     * @param userDto
      * @param roleName not mandatory and have a default value
      * @return
      */
     @PostMapping
-    public ResponseEntity createUser(@Valid @RequestBody User user, @RequestParam(defaultValue = "USER") String roleName) {
-        Role role = roleRepository.findByName(roleName);
-        Set<Role> roles = new HashSet<>();
-        roles.add(role);
-        user.setRoles(roles);
-        user.setId(sequenceService.generateSequence(User.SEQUENCE_NAME));
-        User result = userRepository.save(user);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(user.getId())
-                .toUri();
-        return ResponseEntity.created(location).build();
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto, @RequestParam(defaultValue = "User") String roleName) throws ResourceNotFoundException {
+        Role role = roleService.getRoleByName(roleName);
+        ModelMapper modelMapper = new ModelMapper();
+        RoleDto roleDto = modelMapper.map(role, RoleDto.class);
+
+        Set<RoleDto> roles = new HashSet<>();
+        roles.add(roleDto);
+        userDto.setRoles(roles);
+        UserDto result = userService.createUser(userDto);
+
+        return new ResponseEntity<UserDto>(result, HttpStatus.CREATED);
     }
 }

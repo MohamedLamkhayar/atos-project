@@ -1,8 +1,13 @@
 package com.example.usermongodb.enums;
 
+/**
+ * enumeration for role's value
+ */
 public enum RoleEnum {
 
-
+    /**
+     * possible values
+      */
     ADMIN("Admin"),
     USER("User");
 
