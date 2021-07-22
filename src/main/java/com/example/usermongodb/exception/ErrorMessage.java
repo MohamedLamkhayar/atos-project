@@ -9,6 +9,8 @@ import java.util.Date;
 @AllArgsConstructor
 public class ErrorMessage {
 
+    /**  the moment of the throwing exception  */
     private Date timestamp;
+    /**  the description of the throwing exception */
     private String message;
 }

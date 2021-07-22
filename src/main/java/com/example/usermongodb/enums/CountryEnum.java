@@ -1,7 +1,13 @@
 package com.example.usermongodb.enums;
 
+/**
+ * enumeration for country's value
+ */
 public enum CountryEnum {
 
+    /**
+     * possible values
+     */
     FR("France"),
     MR("Maroc");
 

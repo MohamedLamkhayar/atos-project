@@ -1,39 +1,42 @@
 package com.example.usermongodb.models;
 
-import com.example.usermongodb.enums.CountryEnum;
-import com.example.usermongodb.validation.ValueOfEnumCountry;
+
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.Set;
 
 @Document(collection = "users")
 @Data
-public class User {
+public class User implements Serializable {
 
+    /**
+     * not created in database
+     * it's help to get the user sequence to increment the id
+     */
     @Transient
-    public static final String SEQUENCE_NAME = "users_sequence";
+    public static final String SEQUENCE_NAME = "user_sequence";
 
+    /** id of the user */
     @Id
     private Long id ;
-    @NotBlank(message = "lastName is mandatory")
-    @Size(max = 100, message = "only 100 is allowed")
+    /** lastName of the user */
     private String lastName;
-    @NotBlank(message = "firstName is mandatory")
-    @Size(max = 100, message = "only 100 is allowed")
+    /** firstName of the user */
     private String firstName;
-    @Min(value = 18 , message = "user must have an age bigger than 18")
+    /** age of the user */
     private Integer age;
-    @ValueOfEnumCountry(enumClass = CountryEnum.class)
+    /** country of the user */
     private String country;
+    /** password of the user */
     private String password;
+    /** detect if the user is active */
     private boolean enabled;
+    /** list of roles of the user */
     @DBRef
     private Set<Role> roles;
 
